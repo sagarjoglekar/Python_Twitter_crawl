@@ -3,7 +3,7 @@ import twitterSearch
 
 
 keywords = []
-geo = 'EN'
+geo = 'en'
 filepath = ''
 
 if len(sys.argv) < 3:
