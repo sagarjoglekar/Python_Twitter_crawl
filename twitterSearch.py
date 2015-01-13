@@ -4,10 +4,13 @@ import ParseTwitterConfig
 import sys
 import twitter
 import operator
-from collections import Counter
+import nltk
+import collections
 
+from collections import Counter
 from time import gmtime, strftime
 from TwitterSearch import *
+
 
 class EmoCrawl:
 
@@ -20,6 +23,8 @@ class EmoCrawl:
     access_token = ''
     access_secret = ''
     owner = ''
+    tweettext = []
+    adjectives = []
 
 
     def __init__(self, filepath, keyword_list, geo_tag):
@@ -78,7 +83,32 @@ class EmoCrawl:
 
              # this is where the fun actually starts :)
             for tweet in ts.search_tweets_iterable(tso):
-                print( '@%s tweeted: %s' % ( tweet['user']['screen_name'], tweet['text'] ) )
+                #print( '@%s tweeted: %s' % ( tweet['user']['screen_name'], tweet['text'] ) )
+                self.tweettext.append(tweet['text']);
 
         except TwitterSearchException as e: # take care of all those ugly errors if there are some
             print(e)
+
+        for twttxt in self.tweettext:
+            tokens = nltk.word_tokenize(twttxt)
+            tags = nltk.pos_tag(tokens)
+            for word, pos in tags:
+                if pos in ['JJ']: # feel free to add any other noun tags
+                    self.adjectives.append(word)
+
+
+        collections.Counter(self.adjectives)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
