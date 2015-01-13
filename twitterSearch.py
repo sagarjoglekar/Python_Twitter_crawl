@@ -4,12 +4,13 @@ import ParseTwitterConfig
 import sys
 import twitter
 import operator
-import nltk
 import collections
+import nltk
 
 from collections import Counter
 from time import gmtime, strftime
 from TwitterSearch import *
+from nltk.tokenize import RegexpTokenizer
 
 
 class EmoCrawl:
@@ -90,14 +91,17 @@ class EmoCrawl:
             print(e)
 
         for twttxt in self.tweettext:
-            tokens = nltk.word_tokenize(twttxt)
+            tokenizer = RegexpTokenizer(r'\w+')
+            #tokens = nltk.word_tokenize(twttxt)
+            tokens = tokenizer.tokenize(twttxt)
             tags = nltk.pos_tag(tokens)
             for word, pos in tags:
                 if pos in ['JJ']: # feel free to add any other noun tags
                     self.adjectives.append(word)
 
 
-        collections.Counter(self.adjectives)
+        adjhist = Counter(self.adjectives)
+        print adjhist
 
 
 
