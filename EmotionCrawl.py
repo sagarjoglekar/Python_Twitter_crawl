@@ -1,6 +1,6 @@
 import sys
 import twitterSearch
-
+from optparse import OptionParser
 
 keywords = []
 geo = ''
