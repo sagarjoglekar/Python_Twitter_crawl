@@ -26,6 +26,7 @@ class EmoCrawl:
     owner = ''
     tweettext = []
     adjectives = []
+    nouns = []
 
 
     def __init__(self, filepath, keyword_list, geo_tag):
@@ -98,10 +99,17 @@ class EmoCrawl:
             for word, pos in tags:
                 if pos in ['JJ']: # feel free to add any other noun tags
                     self.adjectives.append(word)
+            for word, pos in tags:
+                if pos in ['NN']: # feel free to add any other noun tags
+                    self.nouns.append(word)
 
 
-        adjhist = Counter(self.adjectives)
-        print adjhist
+
+        adjHist = Counter(self.adjectives)
+        print "Histogram of Adjectives : " + str(adjHist)
+
+        nounHist = Counter(self.nouns)
+        print "Histogram of Nouns : " + str(nounHist)
 
 
 
