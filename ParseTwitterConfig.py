@@ -9,6 +9,7 @@ class Parser:
     _owner = ""
     _ownerId = ""
     _configFilePath = ""
+    _maxTweets="100"
     configParser = ConfigParser.RawConfigParser()
 
     def __init__(self, filepath):
@@ -28,6 +29,7 @@ class Parser:
             self._accessTokenSecret = self.configParser.get('User_Twitter_Config','AccessTokenSecret')
             self._owner = self.configParser.get('User_Twitter_Config','Owner')
             self._ownerId = self.configParser.get('User_Twitter_Config','OwnerId')
+            self._maxTweets = self.configParser.get('User_Twitter_Config','maxTweets')
 
         except:
             print 'Invalid configuration'
@@ -50,5 +52,8 @@ class Parser:
 
     def getOwnerId(self):
         return self._ownerId
+
+    def getMaxTweets(self):
+        return self._maxTweets
 
 

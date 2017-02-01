@@ -4,24 +4,38 @@ from optparse import OptionParser
 
 keywords = []
 geo = ''
-filepath = ''
+FileRoot = ''
+words = []
 
-if len(sys.argv) < 3:
-    print 'Use search correctly: twitterSearch user.config --geo(optional) place --radius(optional) radius in meters keyword1 keyword2 .... '
-    print ' If geotag absent, a default world level would be used '
-    sys.exit()
-else:
-    filepath = str(sys.argv[1])
+if __name__ == "__main__":
 
-    if str((sys.argv[2]))=='--geo':
-        geo = str((sys.argv[3]))
-        rad = float(sys.argv[4])
-        keywords = sys.argv[5:]
+    if len(sys.argv) < 3:
+        print 'Use search correctly:python  EmotionCrawl <user.config> --geo(optional) <place> --radius(optional) <radius in meters> <keyphraseList.list> File>'
+        print ' If geotag absent, a default world level would be used '
+        sys.exit()
     else:
-        keywords = sys.argv[2:]
+        if str(sys.argv[1]).split(".")[-1] == "config":
+            filepath = str(sys.argv[1])
+        else:
+            print "second argument needs to be a .config file with your twitter api credentials"
 
-search = twitterSearch.EmoCrawl(filepath, keywords, geo)
+        if str((sys.argv[2]))=='--geo':
+            geo = str((sys.argv[3]))
+            rad = float(sys.argv[4])
+            keywords = str(sys.argv[5])
+        else:
+            keywords = str(sys.argv[2])
 
-search.makePost();
+        if keywords.split(".")[-1].strip() == "list":
+            f  = open(keywords,"rb")
+            words = f.readlines()
+        else:
+            print keywords
+            print "Please input a .list file with keyphrases seperated by newlines"
 
-search.search()
+
+    search = twitterSearch.EmoCrawl(filepath, words, geo)
+
+    #search.makePost();
+
+    search.search()

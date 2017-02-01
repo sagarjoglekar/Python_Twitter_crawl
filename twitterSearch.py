@@ -2,7 +2,7 @@ import urlparse
 import oauth2 as oauth
 import ParseTwitterConfig
 import sys
-import twitter
+import tweepy
 import operator
 import collections
 import nltk
@@ -48,27 +48,29 @@ class EmoCrawl:
         self.access_token = config.getAccessToken()
         self.access_secret = config.getAccessTokenSecret()
         self.owner = config.getOwner()
+        self.max_tweets = config.getMaxTweets()
+
+        ''' Twitter post '''
+        auth = tweepy.OAuthHandler(self.consumer_key, self.consumer_secret)
+        auth.set_access_token(self.access_token, self.access_secret)
+        self.api =  tweepy.API(auth)
 
 
 
     def makePost(self):
 
-        ''' Twitter post '''
-        api = twitter.Api(consumer_key= self.consumer_key,
-                          consumer_secret= self.consumer_secret,
-                          access_token_key= self.access_token,
-                          access_token_secret= self.access_secret)
 
-        print api.VerifyCredentials()
+
+        # print api.VerifyCredentials()
 
         status = "Crawling Twitter for fun at : "
         time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
-        posted = api.PostUpdate(status + time)
-        print posted.text
+        # posted = api.PostUpdate(status + time)
+        # print posted.text
 
 
-    def search(self):
+    def search_TSO(self):
         try:
             tso = TwitterSearchOrder() # create a TwitterSearchOrder object
             tso.set_keywords(self.keywords) # let's define all words we would like to have a look for
@@ -91,25 +93,44 @@ class EmoCrawl:
         except TwitterSearchException as e: # take care of all those ugly errors if there are some
             print(e)
 
-        for twttxt in self.tweettext:
-            tokenizer = RegexpTokenizer(r'\w+')
-            #tokens = nltk.word_tokenize(twttxt)
-            tokens = tokenizer.tokenize(twttxt)
-            tags = nltk.pos_tag(tokens)
-            for word, pos in tags:
-                if pos in ['JJ']: # feel free to add any other noun tags
-                    self.adjectives.append(word)
-            for word, pos in tags:
-                if pos in ['NN']: # feel free to add any other noun tags
-                    self.nouns.append(word)
+
+    def search(self):
+        print "searching Twitter for : " + self.keywords
+        for k in self.keywords:
+            searched_tweets = []
+            last_id = -1
+            while len(searched_tweets) < self.max_tweets:
+                count = self.max_tweets - len(searched_tweets)
+                try:
+                    new_tweets = api.search(q=query, count=count, max_id=str(last_id - 1))
+                    if not new_tweets:
+                        break
+                    searched_tweets.extend(new_tweets)
+                    last_id = new_tweets[-1].id
+                except tweepy.TweepError as e:
+                    # depending on TweepError.code, one may want to retry or wait
+                    # to keep things simple, we will give up on an error
+                    break
+
+        # for twttxt in self.tweettext:
+        #     tokenizer = RegexpTokenizer(r'\w+')
+        #     #tokens = nltk.word_tokenize(twttxt)
+        #     tokens = tokenizer.tokenize(twttxt)
+        #     tags = nltk.pos_tag(tokens)
+        #     for word, pos in tags:
+        #         if pos in ['JJ']: # feel free to add any other noun tags
+        #             self.adjectives.append(word)
+        #     for word, pos in tags:
+        #         if pos in ['NN']: # feel free to add any other noun tags
+        #             self.nouns.append(word)
 
 
 
-        adjHist = Counter(self.adjectives)
-        print "Histogram of Adjectives : " + str(adjHist)
+        # adjHist = Counter(self.adjectives)
+        # print "Histogram of Adjectives : " + str(adjHist)
 
-        nounHist = Counter(self.nouns)
-        print "Histogram of Nouns : " + str(nounHist)
+        # nounHist = Counter(self.nouns)
+        # print "Histogram of Nouns : " + str(nounHist)
 
 
 
