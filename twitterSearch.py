@@ -3,8 +3,6 @@ import oauth2 as oauth
 import ParseTwitterConfig
 import sys
 import tweepy
-
-from TwitterSearch import *
 from time import gmtime, strftime
 
 
