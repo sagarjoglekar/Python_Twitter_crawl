@@ -1,27 +1,55 @@
 import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+import datetime
+import urllib
 
 
-browser = webdriver.Chrome()
-baseUrl =  u'https://twitter.com/search?l=en&q='
-query = u'%40Hillary'
 
-url = baseUrl + query
+class SeleniumCrawler:
 
-browser.get(url)
+    since = "2013-01-01"
+    till = "2013-12-31"#datetime.datetime.today().strftime('%Y-%m-%d')
+    queryBase = "https://twitter.com/search?l=en&q="
 
-time.sleep(1)
+    def __init__(self, since = None , till = None ):
+
+        if since != None:
+            self.since = since
+        if till != None:
+            self.till = till
 
 
-body = browser.find_element_by_tag_name('body')
+    def encodeQuery(self, query  , Exact = True):
+        queryString = ''
+        if Exact:
+            queryString = '"{}"'.format(query) + ' since:' + self.since + ' until:' + self.till
+        else:
+            queryString = query + ' since:' + self.since + ' until:' + self.till
+        return queryString
 
-for _ in range(5):
-    body.send_keys(Keys.PAGE_DOWN)
-    time.sleep(1)
 
-tweets = body.find_elements_by_class_name('tweet-text')
+    def doCrawl(self , queryString , pages = 3):
+        url = self.queryBase+queryString
 
-for tweet in tweets:
-    print(tweet.text)
+        browser = webdriver.Chrome()
+        browser.get(url)
+        time.sleep(1)
+        body = browser.find_element_by_tag_name('body')
+        for _ in range(pages):
+            tweets = body.find_elements_by_class_name('tweet-text')
 
+            for tweet in tweets:
+                print(tweet.text)
+
+            body.send_keys(Keys.PAGE_DOWN)
+            time.sleep(1)
+        browser.quit()
+
+
+
+if __name__ == "__main__":
+    query = "Happy holidays"
+    searchObj = SeleniumCrawler()
+    searchObj. encodeQuery(query , True)
+    searchObj.doCrawl(searchObj. encodeQuery(query , True))
