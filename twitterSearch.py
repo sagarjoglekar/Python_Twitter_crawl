@@ -92,6 +92,8 @@ class EmoCrawl:
         searched_tweets = []
 
         for k in self.keywords:
+
+            k = k.strip()
             print "searching Twitter for : " + k
             last_id = -1
             search_results = self.api.search(q=k, count=self.max_tweets , show_user = True)

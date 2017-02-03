@@ -2,3 +2,7 @@
 *.pyc
 
 *.config
+keywords.list
+newsWords.list
+test.txt
+logs.json
