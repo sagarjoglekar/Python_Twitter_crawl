@@ -6,7 +6,7 @@ import tweepy
 from time import gmtime, strftime
 
 
-class EmoCrawl:
+class tweepyCrawl:
 
     ''' Get a list of keywords '''
     keywords = []
@@ -22,17 +22,12 @@ class EmoCrawl:
     nouns = []
 
 
-    def __init__(self, filepath, keyword_list, geo_tag):
+    def __init__(self, filepath ):
 
         '''Initialize Parser and parse the config'''
 
         config = ParseTwitterConfig.Parser(filepath)
         config.parseConfig()
-
-        ''' store search keywords and geo'''
-        self.keywords = keyword_list
-        self.geo = geo_tag
-
 
         '''Populate OAuth fields '''
 
@@ -49,49 +44,11 @@ class EmoCrawl:
         self.api =  tweepy.API(auth)
 
 
-
-    # def makePost(self):
-
-
-
-    #     # print api.VerifyCredentials()
-
-    #     status = "Crawling Twitter for fun at : "
-    #     time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-
-    #     # posted = api.PostUpdate(status + time)
-    #     # print posted.text
-
-
-    # def search_TSO(self):
-    #     try:
-    #         tso = TwitterSearchOrder() # create a TwitterSearchOrder object
-    #         tso.set_keywords(self.keywords) # let's define all words we would like to have a look for
-    #         tso.set_language('en') # we want to see English tweets only
-    #         tso.set_include_entities(False) # and don't give us all those entity information
-
-    #         # it's about time to create a TwitterSearch object with our secret tokens
-    #         ts = TwitterSearch(
-    #             consumer_key = self.consumer_key,
-    #             consumer_secret = self.consumer_secret,
-    #             access_token = self.access_token,
-    #             access_token_secret = self.access_secret
-    #          )
-
-    #          # this is where the fun actually starts :)
-    #         for tweet in ts.search_tweets_iterable(tso):
-    #             #print( '@%s tweeted: %s' % ( tweet['user']['screen_name'], tweet['text'] ) )
-    #             self.tweettext.append(tweet['text']);
-
-    #     except TwitterSearchException as e: # take care of all those ugly errors if there are some
-    #         print(e)
-
-
-    def search(self):
+    def search(self , keywords , geo_tag):
 
         searched_tweets = []
 
-        for k in self.keywords:
+        for k in keywords:
 
             k = k.strip()
             print "searching Twitter for : " + k
@@ -101,6 +58,11 @@ class EmoCrawl:
                 print t
 
         print searched_tweets
+
+    def getUsers(self , userIdList):
+            userMeta = self.api.lookup_users(user_ids=userIdList)
+            for user in userMeta:
+                print user
 
 
 
