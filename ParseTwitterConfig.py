@@ -30,6 +30,8 @@ class Parser:
             self._owner = self.configParser.get('User_Twitter_Config','Owner')
             self._ownerId = self.configParser.get('User_Twitter_Config','OwnerId')
             self._maxTweets = self.configParser.get('User_Twitter_Config','maxTweets')
+            self._chromePath = self.configParser.get('User_Twitter_Config','chromePath')
+            self._chromeDriverPath = self.configParser.get('User_Twitter_Config','chromeDriverPath')
 
         except:
             print 'Invalid configuration'
@@ -55,5 +57,11 @@ class Parser:
 
     def getMaxTweets(self):
         return self._maxTweets
+
+    def getChromePath(self):
+        return self._chromePath
+
+    def getChromeDriverPath(self):
+        return self._chromeDriverPath
 
 

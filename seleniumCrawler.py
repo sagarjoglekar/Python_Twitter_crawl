@@ -6,7 +6,7 @@ from datetime import datetime , timedelta
 import json
 from twitterSearch import tweepyCrawl
 from selenium.common.exceptions import NoSuchElementException
-
+import ParseTwitterConfig
 
 
 class SeleniumCrawler:
@@ -17,7 +17,17 @@ class SeleniumCrawler:
     till = datetime.today().strftime('%Y-%m-%d')
     queryBase = "https://twitter.com/search?l=en&q="
 
-    def __init__(self, since = None , till = None ):
+    def __init__(self, configFile , since = None , till = None ):
+
+        config = ParseTwitterConfig.Parser(configFile)
+        self.service_log_path = "{}/chromedriver.log".format(".")
+        self.service_args = ['--verbose']
+        config.parseConfig()
+        self.options = webdriver.ChromeOptions()
+        #Uncomment this line for Ubuntu
+        #self.options.binary_location = config.getChromePath()
+        self.driver = config.getChromeDriverPath()
+        print self.options
 
         if since != None:
             self.since = since
@@ -34,15 +44,25 @@ class SeleniumCrawler:
         return queryString
 
     def deserializeTweets(self, tweetText):
+        components = tweetText.split('\n')
+        for i in range(len(conponents)):
+            if components[i] == "More":
+                metaText = componets[:i]
         return self
 
     def doCrawl(self , queryString , pages = 3):
         url = self.queryBase+queryString
         print url
         tweetData = dict()
-        browser = webdriver.Chrome()
+
+        browser = webdriver.Chrome(self.driver,
+        chrome_options=self.options,
+        service_args=self.service_args,
+        service_log_path=self.service_log_path)
+
         browser.get(url)
         time.sleep(1)
+
         body = browser.find_element_by_tag_name('body')
         for _ in range(pages):
             tweets = body.find_elements_by_class_name('js-stream-item')
@@ -67,7 +87,12 @@ class SeleniumCrawler:
     def getUserInfo(self , DataDict):
         baseUrl = "https://www.twitter.com/"
         'ProfileNav-list'
-        browser = webdriver.Chrome()
+
+        browser = webdriver.Chrome(self.driver,
+        chrome_options=self.options,
+        service_args=self.service_args,
+        service_log_path=self.service_log_path)
+
         for tweet in DataDict:
             userScreenName = DataDict[tweet]['meta']['data-screen-name']
             url = baseUrl + userScreenName
@@ -110,7 +135,7 @@ class SeleniumCrawler:
 
 if __name__ == "__main__":
     query = urllib.pathname2url('#largerhands')
-    searchObj = SeleniumCrawler()
+    searchObj = SeleniumCrawler("sagarConfig.config")
     # apiObj = tweepyCrawl("sagarConfig.con")
 
     crawledData = searchObj.doCrawl(searchObj. encodeQuery(query , True) , 1)
