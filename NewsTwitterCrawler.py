@@ -29,7 +29,7 @@ if __name__ == "__main__":
     for i in  arts.keys():
 
         hashes = getCrawledHashes(Dir)
-        if hashlib.sha224(arts[i]['title']).hexdigest() not in hashes:
+        if hashlib.sha224(arts[i]['title'].encode("utf-8")).hexdigest() not in hashes:
 
             query = urllib.pathname2url(arts[i]['title'])
 
