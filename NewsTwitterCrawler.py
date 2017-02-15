@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
             query = urllib.pathname2url(arts[i]['title'])
 
-            crawledData = searchObj.doCrawl(searchObj. encodeQuery(query , True) , 1)
+            crawledData = searchObj.doCrawl(searchObj. encodeQuery(query , True) , 3)
 
             searchObj.getUserInfo(crawledData)
             filename = Dir + str(hashlib.sha224(arts[i]['title']).hexdigest())+ ".json"
