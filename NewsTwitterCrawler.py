@@ -3,6 +3,8 @@ import json
 import urllib
 import hashlib
 from os import walk
+import os
+import sys
 
 def loadJson(file):
     with open(file , 'rb') as fp:
@@ -21,12 +23,15 @@ def getCrawledHashes(dir):
 
 
 if __name__ == "__main__":
+    os.environ["DISPLAY"] = ":10"
     newsFile = "NewsArts02.json"
     Dir = "NewsCrawlDir/"
     arts = loadJson(newsFile)
     searchObj = SeleniumCrawler("sagarConfig.config")
-
+    iters = 0
     for i in  arts.keys():
+        if iters == 10:
+            sys.exit(0)
 
         hashes = getCrawledHashes(Dir)
         if hashlib.sha224(arts[i]['title'].encode("utf-8")).hexdigest() not in hashes:
@@ -39,8 +44,12 @@ if __name__ == "__main__":
             filename = Dir + str( hashlib.sha224(arts[i]['title'].encode("utf-8")).hexdigest() ) + ".json"
             with open(filename, 'w') as fp:
                 json.dump(crawledData, fp)
+
+            iters+=1
         else:
             print "Title Already crawled"
+
+
 
 
 
