@@ -25,7 +25,7 @@ class SeleniumCrawler:
         config.parseConfig()
         self.options = webdriver.ChromeOptions()
         #Uncomment this line for Ubuntu
-        #self.options.binary_location = config.getChromePath()
+        self.options.binary_location = config.getChromePath()
         self.driver = config.getChromeDriverPath()
         print self.options
 
@@ -75,7 +75,7 @@ class SeleniumCrawler:
                 attrs = {}
                 tweet_text = ""
 
-                 try :
+                try :
                     meta = tweet.find_element_by_class_name('tweet')
 
                     attrs = browser.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', meta)
@@ -99,6 +99,7 @@ class SeleniumCrawler:
                 except NoSuchElementException:
 
                     print "Failed to find Action Fields!! "
+                    break
 
 
 
