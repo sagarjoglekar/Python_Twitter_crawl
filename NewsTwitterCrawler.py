@@ -2,12 +2,22 @@ from seleniumCrawler import SeleniumCrawler
 import json
 import urllib
 import hashlib
+from os import walk
 
 def loadJson(file):
     with open(file , 'rb') as fp:
         newsArts = json.load(fp)
-
     return newsArts
+
+def getCrawledHashes(dir):
+    files = []
+    for (dirpath, dirnames, filenames) in walk(dir):
+        files.extend(filenames)
+        break
+    hashes = []
+    for f in files:
+        hashes.append(f.split('.')[0])
+    return hashes
 
 
 if __name__ == "__main__":
@@ -16,16 +26,22 @@ if __name__ == "__main__":
     arts = loadJson(newsFile)
     searchObj = SeleniumCrawler("sagarConfig.config")
 
-    for i in  arts.keys()[:3]:
+    for i in  arts.keys():
 
-        query = urllib.pathname2url(arts[i]['title'])
+        hashes = getCrawledHashes(Dir)
+        if hashlib.sha224(arts[i]['title']).hexdigest() not in hashes:
 
-        crawledData = searchObj.doCrawl(searchObj. encodeQuery(query , True) , 1)
+            query = urllib.pathname2url(arts[i]['title'])
 
-        searchObj.getUserInfo(crawledData)
-        filename = Dir + str(hashlib.sha224(i).hexdigest())+ ".json"
-        with open(filename, 'w') as fp:
-            json.dump(crawledData, fp)
+            crawledData = searchObj.doCrawl(searchObj. encodeQuery(query , True) , 1)
+
+            searchObj.getUserInfo(crawledData)
+            filename = Dir + str(hashlib.sha224(arts[i]['title']).hexdigest())+ ".json"
+            with open(filename, 'w') as fp:
+                json.dump(crawledData, fp)
+        else:
+            print "Title Already crawled"
+
 
 
 
