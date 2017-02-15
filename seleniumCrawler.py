@@ -29,6 +29,11 @@ class SeleniumCrawler:
         self.driver = config.getChromeDriverPath()
         print self.options
 
+        self.browser = webdriver.Chrome(self.driver,
+        chrome_options=self.options,
+        service_args=self.service_args,
+        service_log_path=self.service_log_path)
+
         if since != None:
             self.since = since
         if till != None:
@@ -55,15 +60,15 @@ class SeleniumCrawler:
         print url
         tweetData = dict()
 
-        browser = webdriver.Chrome(self.driver,
-        chrome_options=self.options,
-        service_args=self.service_args,
-        service_log_path=self.service_log_path)
+        # browser = webdriver.Chrome(self.driver,
+        # chrome_options=self.options,
+        # service_args=self.service_args,
+        # service_log_path=self.service_log_path)
 
-        browser.get(url)
+        self.browser.get(url)
         time.sleep(1)
 
-        body = browser.find_element_by_tag_name('body')
+        body = self.browser.find_element_by_tag_name('body')
         for _ in range(pages):
             tweets = body.find_elements_by_class_name('js-stream-item')
 
@@ -118,24 +123,18 @@ class SeleniumCrawler:
 
             body.send_keys(Keys.PAGE_DOWN)
             time.sleep(1)
-        browser.quit()
+        #browser.quit()
         return tweetData
 
     def getUserInfo(self , DataDict):
         baseUrl = "https://www.twitter.com/"
-        'ProfileNav-list'
-
-        browser = webdriver.Chrome(self.driver,
-        chrome_options=self.options,
-        service_args=self.service_args,
-        service_log_path=self.service_log_path)
 
         for tweet in DataDict:
             userScreenName = DataDict[tweet]['meta']['data-screen-name']
             url = baseUrl + userScreenName
 
-            browser.get(url)
-            body = browser.find_element_by_tag_name('body')
+            self.browser.get(url)
+            body = self.browser.find_element_by_tag_name('body')
             zone = body.find_element_by_class_name('ProfileNav')
             try :
 
@@ -160,7 +159,7 @@ class SeleniumCrawler:
             except NoSuchElementException :
                 print "Failed to find fields!! for : " + userScreenName
 
-        browser.quit()
+        #browser.quit()
         return DataDict
 
 
