@@ -83,7 +83,7 @@ class SeleniumCrawler:
                 try :
                     meta = tweet.find_element_by_class_name('tweet')
 
-                    attrs = browser.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', meta)
+                    attrs = self.browser.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', meta)
 
                     tweet_text = tweet.find_element_by_class_name('tweet-text').text
 
