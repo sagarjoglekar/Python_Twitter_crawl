@@ -11,10 +11,10 @@ import ParseTwitterConfig
 
 class SeleniumCrawler:
 
-    #since = "2013-01-01"
-    #till = "2013-12-31"#datetime.datetime.today().strftime('%Y-%m-%d')
-    since = (datetime.today() - timedelta(days=10)).strftime('%Y-%m-%d')
-    till = datetime.today().strftime('%Y-%m-%d')
+    since = "2013-01-01"
+    till = "2014-12-31"#datetime.datetime.today().strftime('%Y-%m-%d')
+    #since = (datetime.today() - timedelta(days=10)).strftime('%Y-%m-%d')
+    #till = datetime.today().strftime('%Y-%m-%d')
     queryBase = "https://twitter.com/search?l=en&q="
 
     def __init__(self, configFile , since = None , till = None ):
