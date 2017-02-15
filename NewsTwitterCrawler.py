@@ -36,7 +36,7 @@ if __name__ == "__main__":
             crawledData = searchObj.doCrawl(searchObj. encodeQuery(query , True) , 3)
 
             searchObj.getUserInfo(crawledData)
-            filename = Dir + str(hashlib.sha224(arts[i]['title']).hexdigest())+ ".json"
+            filename = Dir + str( hashlib.sha224(arts[i]['title'].encode("utf-8")).hexdigest() ) + ".json"
             with open(filename, 'w') as fp:
                 json.dump(crawledData, fp)
         else:
