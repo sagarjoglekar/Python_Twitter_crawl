@@ -25,7 +25,7 @@ class SeleniumCrawler:
         config.parseConfig()
         self.options = webdriver.ChromeOptions()
         #Uncomment this line for Ubuntu
-        self.options.binary_location = config.getChromePath()
+        #self.options.binary_location = config.getChromePath()
         self.driver = config.getChromeDriverPath()
         print self.options
 
@@ -69,13 +69,45 @@ class SeleniumCrawler:
 
 
             for tweet in tweets:
-                user = tweet.find_element_by_class_name('tweet')
+                meta = tweet.find_element_by_class_name('tweet')
 
-                attrs = browser.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', user)
+                attrs = browser.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', meta)
+
+                tweet_text = tweet.find_element_by_class_name('tweet-text')
+
+                reply_count = 0
+                retweet_count = 0
+                like_count = 0
+
+                try :
+
+                    actions = tweet.find_element_by_class_name('ProfileTweet-actionList')
+
+                    reply = actions.find_element_by_class_name('ProfileTweet-action--reply')
+                    reply_count = reply.find_element_by_class_name('ProfileTweet-actionCountForPresentation').text
+
+                    retweet = actions.find_element_by_class_name('ProfileTweet-action--retweet')
+                    retweet_count = retweet.find_element_by_class_name('ProfileTweet-actionCountForPresentation').text
+
+                    like = actions.find_element_by_class_name('ProfileTweet-action--favorite' )
+                    like_count = like.find_element_by_class_name('ProfileTweet-actionCountForPresentation').text
+
+                except NoSuchElementException:
+
+                    print "Failed to find Action Fields!! "
+
+
+
+
+
+
 
                 tweetData[attrs['data-tweet-id']] = dict()
                 tweetData[attrs['data-tweet-id']]['meta'] = attrs
-                tweetData[attrs['data-tweet-id']]['text'] = user.text
+                tweetData[attrs['data-tweet-id']]['text'] = tweet_text.text
+                tweetData[attrs['data-tweet-id']]['Reply_count'] = reply_count
+                tweetData[attrs['data-tweet-id']]['Retweet_count'] = retweet_count
+                tweetData[attrs['data-tweet-id']]['Like_count'] = like_count
                 print tweetData[attrs['data-tweet-id']]
                 print "\n"
 
