@@ -32,12 +32,12 @@ if __name__ == "__main__":
     searchObj = SeleniumCrawler("sagarConfig.config")
     iters = 0
     for i in  arts.keys():
-        if iters == 10:
+        if iters == 20:
             sys.exit(0)
 
         hashes = getCrawledHashes(Dir)
         if hashlib.sha224(arts[i]['title'].encode("utf-8")).hexdigest() not in hashes:
-            print "Searching for : " + arts[i]['title']
+            print "Searching for : " + arts[i]['title'].encode("utf-8")
             query = urllib.pathname2url(arts[i]['title'].encode("utf-8"))
 
             crawledData = searchObj.doCrawl(searchObj. encodeQuery(query , True) , 3)
