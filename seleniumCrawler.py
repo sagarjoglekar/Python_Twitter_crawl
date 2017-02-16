@@ -78,9 +78,14 @@ class SeleniumCrawler:
             body.send_keys(Keys.PAGE_DOWN)
             print "Scrolling: %d" %_
             time.sleep(2)
-        stream = body.find_element_by_class_name('stream-container')
-        tweets = stream.find_elements_by_class_name('js-stream-item')
-        print "Found %d Tweets " %len(tweets)
+
+        try:
+            stream = body.find_element_by_class_name('stream-container')
+            tweets = stream.find_elements_by_class_name('js-stream-item')
+            print "Found %d Tweets " %len(tweets)
+        except NoSuchElementException:
+            print "Search showed up empty, moving on"
+            return tweetData
 
         for tweet in tweets:
             reply_count = 0
@@ -184,7 +189,7 @@ if __name__ == "__main__":
     searchObj = SeleniumCrawler("sagarConfig.config")
     # apiObj = tweepyCrawl("sagarConfig.con")
 
-    crawledData = searchObj.doCrawl(searchObj. encodeQuery(query , True) , 5)
+    crawledData = searchObj.doCrawl(searchObj.encodeQuery(query , True) , 5)
 
     searchObj.getUserInfo(crawledData)
     with open('result2.json', 'w') as fp:

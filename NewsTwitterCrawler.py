@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
         hashes = getCrawledHashes(Dir)
         if hashlib.sha224(arts[i]['title'].encode("utf-8")).hexdigest() not in hashes:
-
+            print "Searching for : " + arts[i]['title']
             query = urllib.pathname2url(arts[i]['title'].encode("utf-8"))
 
             crawledData = searchObj.doCrawl(searchObj. encodeQuery(query , True) , 3)
