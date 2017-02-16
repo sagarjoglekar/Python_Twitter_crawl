@@ -66,7 +66,7 @@ class SeleniumCrawler:
         # service_log_path=self.service_log_path)
 
         self.browser.get(url)
-        time.sleep(1)
+        time.sleep(10)
 
         body = self.browser.find_element_by_tag_name('body')
         for _ in range(pages):
@@ -122,7 +122,7 @@ class SeleniumCrawler:
                 print "\n"
 
             body.send_keys(Keys.PAGE_DOWN)
-            time.sleep(1)
+            time.sleep(5)
         #browser.quit()
         return tweetData
 
@@ -134,6 +134,7 @@ class SeleniumCrawler:
             url = baseUrl + userScreenName
 
             self.browser.get(url)
+            time.sleep(10)
             body = self.browser.find_element_by_tag_name('body')
             zone = body.find_element_by_class_name('ProfileNav')
             try :
