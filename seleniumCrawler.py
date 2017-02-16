@@ -59,7 +59,7 @@ class SeleniumCrawler:
         self.browser.quit()
         time.sleep(1)
 
-    def doCrawl(self , queryString , pages = 3):
+    def doCrawl(self , queryString , pages):
         url = self.queryBase+queryString
         print url
         tweetData = dict()
@@ -70,63 +70,70 @@ class SeleniumCrawler:
         # service_log_path=self.service_log_path)
 
         self.browser.get(url)
-        time.sleep(10)
+        time.sleep(1)
 
         body = self.browser.find_element_by_tag_name('body')
+
         for _ in range(pages):
-            tweets = body.find_elements_by_class_name('js-stream-item')
-
-
-            for tweet in tweets:
-                reply_count = 0
-                retweet_count = 0
-                like_count = 0
-                attrs = {}
-                tweet_text = ""
-
-                try :
-                    meta = tweet.find_element_by_class_name('tweet')
-
-                    attrs = self.browser.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', meta)
-
-                    tweet_text = tweet.find_element_by_class_name('tweet-text').text
-
-
-
-
-                    actions = tweet.find_element_by_class_name('ProfileTweet-actionList')
-
-                    reply = actions.find_element_by_class_name('ProfileTweet-action--reply')
-                    reply_count = reply.find_element_by_class_name('ProfileTweet-actionCountForPresentation').text
-
-                    retweet = actions.find_element_by_class_name('ProfileTweet-action--retweet')
-                    retweet_count = retweet.find_element_by_class_name('ProfileTweet-actionCountForPresentation').text
-
-                    like = actions.find_element_by_class_name('ProfileTweet-action--favorite' )
-                    like_count = like.find_element_by_class_name('ProfileTweet-actionCountForPresentation').text
-
-                except NoSuchElementException:
-
-                    print "Failed to find Action Fields!! "
-                    break
-
-
-
-
-
-
-
-                tweetData[attrs['data-tweet-id']] = dict()
-                tweetData[attrs['data-tweet-id']]['meta'] = attrs
-                tweetData[attrs['data-tweet-id']]['text'] = tweet_text
-                tweetData[attrs['data-tweet-id']]['Reply_count'] = reply_count
-                tweetData[attrs['data-tweet-id']]['Retweet_count'] = retweet_count
-                tweetData[attrs['data-tweet-id']]['Like_count'] = like_count
-                print tweetData[attrs['data-tweet-id']]
-                print "\n"
-
             body.send_keys(Keys.PAGE_DOWN)
-            time.sleep(5)
+            print "Scrolling: %d" %_
+            time.sleep(2)
+        stream = body.find_element_by_class_name('stream-container')
+        tweets = stream.find_elements_by_class_name('js-stream-item')
+        print "Found %d Tweets " %len(tweets)
+
+        for tweet in tweets:
+            reply_count = 0
+            retweet_count = 0
+            like_count = 0
+            attrs = {}
+            tweet_text = ""
+
+            try :
+                meta = tweet.find_element_by_class_name('tweet')
+                print tweet.text
+
+                attrs = self.browser.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', meta)
+
+                content = meta.find_element_by_class_name('content')
+
+                tweet_text = content.find_element_by_class_name('tweet-text').text
+
+
+
+
+                actions = content.find_element_by_class_name('ProfileTweet-actionList')
+
+                reply = actions.find_element_by_class_name('ProfileTweet-action--reply')
+                reply_count = reply.find_element_by_class_name('ProfileTweet-actionCountForPresentation').text
+
+                retweet = actions.find_element_by_class_name('ProfileTweet-action--retweet')
+                retweet_count = retweet.find_element_by_class_name('ProfileTweet-actionCountForPresentation').text
+
+                like = actions.find_element_by_class_name('ProfileTweet-action--favorite' )
+                like_count = like.find_element_by_class_name('ProfileTweet-actionCountForPresentation').text
+
+            except NoSuchElementException:
+
+                print "Failed to find Action Fields!! "
+                break
+
+
+
+
+
+
+
+            tweetData[attrs['data-tweet-id']] = dict()
+            tweetData[attrs['data-tweet-id']]['meta'] = attrs
+            tweetData[attrs['data-tweet-id']]['text'] = tweet_text
+            tweetData[attrs['data-tweet-id']]['Reply_count'] = reply_count
+            tweetData[attrs['data-tweet-id']]['Retweet_count'] = retweet_count
+            tweetData[attrs['data-tweet-id']]['Like_count'] = like_count
+            print tweetData[attrs['data-tweet-id']]
+            print "\n"
+
+
         return tweetData
 
     def getUserInfo(self , DataDict):
@@ -137,7 +144,7 @@ class SeleniumCrawler:
             url = baseUrl + userScreenName
 
             self.browser.get(url)
-            time.sleep(10)
+            time.sleep(1)
             body = self.browser.find_element_by_tag_name('body')
             zone = body.find_element_by_class_name('ProfileNav')
             try :
@@ -173,11 +180,11 @@ class SeleniumCrawler:
 
 
 if __name__ == "__main__":
-    query = urllib.pathname2url('#largerhands')
+    query = urllib.pathname2url('Facebook kills physical Gifts in favor of digital redemption codes')
     searchObj = SeleniumCrawler("sagarConfig.config")
     # apiObj = tweepyCrawl("sagarConfig.con")
 
-    crawledData = searchObj.doCrawl(searchObj. encodeQuery(query , True) , 1)
+    crawledData = searchObj.doCrawl(searchObj. encodeQuery(query , True) , 5)
 
     searchObj.getUserInfo(crawledData)
     with open('result2.json', 'w') as fp:
