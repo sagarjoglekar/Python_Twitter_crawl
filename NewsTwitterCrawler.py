@@ -51,6 +51,9 @@ if __name__ == "__main__":
         else:
             print "Title Already crawled"
 
+    print "Cleaning up !"
+    searchObj.killBrowser()
+
 
 
 

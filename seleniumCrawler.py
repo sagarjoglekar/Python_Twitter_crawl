@@ -55,6 +55,10 @@ class SeleniumCrawler:
                 metaText = componets[:i]
         return self
 
+    def killBrowser(self):
+        self.browser.quit()
+        time.sleep(1)
+
     def doCrawl(self , queryString , pages = 3):
         url = self.queryBase+queryString
         print url
@@ -123,7 +127,6 @@ class SeleniumCrawler:
 
             body.send_keys(Keys.PAGE_DOWN)
             time.sleep(5)
-        #browser.quit()
         return tweetData
 
     def getUserInfo(self , DataDict):
@@ -160,7 +163,6 @@ class SeleniumCrawler:
             except NoSuchElementException :
                 print "Failed to find fields!! for : " + userScreenName
 
-        #browser.quit()
         return DataDict
 
 
@@ -180,3 +182,4 @@ if __name__ == "__main__":
     searchObj.getUserInfo(crawledData)
     with open('result2.json', 'w') as fp:
         json.dump(crawledData, fp)
+    searchObj.killBrowser()
