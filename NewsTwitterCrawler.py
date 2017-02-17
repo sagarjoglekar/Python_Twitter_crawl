@@ -31,19 +31,20 @@ if __name__ == "__main__":
     arts = loadJson(newsFile)
     searchObj = SeleniumCrawler("sagarConfig.config")
     iters = 0
-    for i in  arts.keys():
+    for i in range(len(arts.keys())):
         #if iters == 10:
         #    sys.exit(0)
-
+        k = arts.keys()[i]
+        print "Crawling titlenumber %d of %d" %(i,len(arts.keys()))
         hashes = getCrawledHashes(Dir)
-        if hashlib.sha224(arts[i]['title'].encode("utf-8")).hexdigest() not in hashes:
-            print "Searching for : " + arts[i]['title'].encode("utf-8")
-            query = urllib.pathname2url(arts[i]['title'].encode("utf-8"))
+        if hashlib.sha224(arts[k]['title'].encode("utf-8")).hexdigest() not in hashes:
+            print "Searching for : " + arts[k]['title'].encode("utf-8")
+            query = urllib.pathname2url(arts[k]['title'].encode("utf-8"))
 
             crawledData = searchObj.doCrawl(searchObj. encodeQuery(query , False) , 3)
 
             searchObj.getUserInfo(crawledData)
-            filename = Dir + str( hashlib.sha224(arts[i]['title'].encode("utf-8")).hexdigest() ) + ".json"
+            filename = Dir + str( hashlib.sha224(arts[k]['title'].encode("utf-8")).hexdigest() ) + ".json"
             with open(filename, 'w') as fp:
                 json.dump(crawledData, fp)
 
