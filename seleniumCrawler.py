@@ -25,7 +25,7 @@ class SeleniumCrawler:
         config.parseConfig()
         self.options = webdriver.ChromeOptions()
         #Uncomment this line for Ubuntu
-        self.options.binary_location = config.getChromePath()
+        #self.options.binary_location = config.getChromePath()
         self.driver = config.getChromeDriverPath()
         print self.options
 
@@ -192,7 +192,7 @@ class SeleniumCrawler:
 
 
 if __name__ == "__main__":
-    query = urllib.pathname2url('Sushma Swaraj calls for harsh punishment to Delhi gang rape perpetrators')
+    query = urllib.pathname2url('Alabama Football: Biggest Questions Defending Champs Must Answer')
     searchObj = SeleniumCrawler("sagarConfig.config")
     # apiObj = tweepyCrawl("sagarConfig.con")
 
