@@ -80,7 +80,7 @@ class SeleniumCrawler:
             time.sleep(2)
 
         try:
-            stream = body.find_element_by_class_name('stream-container')
+            stream = body.find_element_by_class_name('stream')
             tweets = stream.find_elements_by_class_name('js-stream-item')
             print "Found %d Tweets " %len(tweets)
         except NoSuchElementException:
@@ -147,24 +147,31 @@ class SeleniumCrawler:
         for tweet in DataDict:
             userScreenName = DataDict[tweet]['meta']['data-screen-name']
             url = baseUrl + userScreenName
+            tweets_number = str(0)
+            following_number = str(0)
+            follower_number = str(0)
+            fav_number = str(0)
+
 
             self.browser.get(url)
             time.sleep(1)
             body = self.browser.find_element_by_tag_name('body')
-            zone = body.find_element_by_class_name('ProfileNav')
+            zone = body.find_element_by_class_name('ProfileNav-list')
             try :
-
-                following = zone.find_element_by_class_name('ProfileNav-item--following')
-                following_number = following.find_element_by_class_name('ProfileNav-value').text
 
                 tweets = zone.find_element_by_class_name('ProfileNav-item--tweets')
                 tweets_number = tweets.find_element_by_class_name('ProfileNav-value').text
 
+                following = zone.find_element_by_class_name('ProfileNav-item--following')
+                following_number = following.find_element_by_class_name('ProfileNav-value').text
+
                 follower = zone.find_element_by_class_name('ProfileNav-item--followers')
                 follower_number = follower.find_element_by_class_name('ProfileNav-value').text
-
-                fav = zone.find_element_by_class_name('ProfileNav-item--favorites')
-                fav_number = fav.find_element_by_class_name('ProfileNav-value').text
+                try:
+                    fav = zone.find_element_by_class_name('ProfileNav-item--favorites')
+                    fav_number = fav.find_element_by_class_name('ProfileNav-value').text
+                except NoSuchElementException:
+                    print "Couldn't Find Favourites"
 
                 print "User Stats for user : " + userScreenName + " following: " + following_number + " tweets: " +  tweets_number + " Followers: " +  follower_number + " Favourites: " +fav_number
                 usermeta = {'Name' : userScreenName , 'Following' : following_number , 'tweets' : tweets_number  , 'Followers' : follower_number , 'Likes' : fav_number}
@@ -185,11 +192,11 @@ class SeleniumCrawler:
 
 
 if __name__ == "__main__":
-    query = urllib.pathname2url('Facebook kills physical Gifts in favor of digital redemption codes')
+    query = urllib.pathname2url('Sushma Swaraj calls for harsh punishment to Delhi gang rape perpetrators')
     searchObj = SeleniumCrawler("sagarConfig.config")
     # apiObj = tweepyCrawl("sagarConfig.con")
 
-    crawledData = searchObj.doCrawl(searchObj.encodeQuery(query , True) , 5)
+    crawledData = searchObj.doCrawl(searchObj.encodeQuery(query , True) , 3)
 
     searchObj.getUserInfo(crawledData)
     with open('result2.json', 'w') as fp:
