@@ -81,7 +81,7 @@ class SeleniumCrawler:
 
         try:
             stream = body.find_element_by_class_name('stream')
-            tweets = stream.find_elements_by_class_name('js-stream-item')
+            tweets = stream.find_elements_by_class_name('stream-item')
             print "Found %d Tweets " %len(tweets)
         except NoSuchElementException:
             print "Search showed up empty, moving on"
