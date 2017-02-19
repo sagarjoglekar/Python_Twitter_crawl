@@ -24,7 +24,7 @@ def getCrawledHashes(dir):
 
 
 if __name__ == "__main__":
-    os.environ["DISPLAY"] = ":10"
+    #os.environ["DISPLAY"] = ":10"
     os.system('pgrep chrome | xargs kill -9')
     newsFile = "NewsArts02.json"
     Dir = "NewsCrawlDir/"
