@@ -13,3 +13,5 @@ geckodriver.log
 test2.txt
 NewsCrawlDir
 nohup.out
+oldNewsCrawlDir
+test.html

@@ -5,11 +5,11 @@ import urllib
 from datetime import datetime , timedelta
 import json
 from twitterSearch import tweepyCrawl
-from selenium.common.exceptions import NoSuchElementException
+#from selenium.common.exceptions import NoSuchElementException
 import ParseTwitterConfig
 
 
-class SeleniumCrawler:
+class RestCrawler:
 
     since = "2013-01-01"
     till = "2014-12-31"#datetime.datetime.today().strftime('%Y-%m-%d')
@@ -19,32 +19,10 @@ class SeleniumCrawler:
 
     def __init__(self, configFile , since = None , till = None ):
 
-        config = ParseTwitterConfig.Parser(configFile)
-        self.service_log_path = "{}/chromedriver.log".format(".")
-        self.service_args = ['--verbose']
-        config.parseConfig()
-        self.options = webdriver.ChromeOptions()
-        #Uncomment this line for Ubuntu
-        #self.options.binary_location = config.getChromePath()
-        self.driver = config.getChromeDriverPath()
-        print self.options
-
-        self.browser = webdriver.Chrome(self.driver,
-        chrome_options=self.options,
-        service_args=self.service_args,
-        service_log_path=self.service_log_path)
-
         if since != None:
             self.since = since
         if till != None:
             self.till = till
-
-
-
-    def getAttributes(self , element):
-        #attributes = {}
-        attributes = self.browser.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', element)
-        return attributes
 
 
     def encodeQuery(self, query  , Exact = True):
@@ -78,12 +56,8 @@ class SeleniumCrawler:
 
         self.browser.get(url)
         time.sleep(1)
-        try:
-            body = self.browser.find_element_by_tag_name('body')
-        except NoSuchElementException:
-            print "Couldn't find body, moving on"
-            time.sleep(2)
-            return tweetData
+
+        body = self.browser.find_element_by_tag_name('body')
 
         for _ in range(pages):
             body.send_keys(Keys.PAGE_DOWN)
@@ -109,7 +83,7 @@ class SeleniumCrawler:
                 meta = tweet.find_element_by_class_name('tweet')
                 print tweet.text
 
-                attrs = self.getAttributes(meta)
+                attrs = self.browser.execute_script('var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;', meta)
 
                 content = meta.find_element_by_class_name('content')
 
@@ -133,6 +107,12 @@ class SeleniumCrawler:
 
                 print "Failed to find Action Fields!! "
                 break
+
+
+
+
+
+
 
             tweetData[attrs['data-tweet-id']] = dict()
             tweetData[attrs['data-tweet-id']]['meta'] = attrs
@@ -160,12 +140,7 @@ class SeleniumCrawler:
 
             self.browser.get(url)
             time.sleep(1)
-            try:
-                body = self.browser.find_element_by_tag_name('body')
-            except NoSuchElementException:
-                print "Couldn't find body, moving on"
-                time.sleep(2)
-                continue
+            body = self.browser.find_element_by_tag_name('body')
             zone = body.find_element_by_class_name('ProfileNav-list')
             try :
 
@@ -196,62 +171,19 @@ class SeleniumCrawler:
 
 
 
-    def crawlTweet(self , tweetDict ):
-        root = "https://twitter.com"
-        permaLink = tweetDict['meta']['data-permalink-path']
-        url = root + permaLink
-        print url
-        self.browser.get(url)
-        time.sleep(1)
-        attributes = {}
-        try:
-            body = self.browser.find_element_by_class_name('PermalinkOverlay-body')
-        except NoSuchElementException:
-            print "Couldn't find body, moving on"
-            time.sleep(2)
-            return tweetDict
-        try:
-            tweet = body.find_element_by_class_name('tweet')
-        except NoSuchElementException:
-            print "Couldn't Find tweet"
-            return tweetDict
-        try:
-            mediaElement = tweet.find_element_by_class_name('AdaptiveMediaOuterContainer')
-            attributes = mediaElement.get_attribute('innerHTML')
-            tweetDict['hasMedia'] = True
-            tweetDict['mediaHTML'] = attributes
-        except NoSuchElementException:
-            try:
-                cardElement = tweet.find_element_by_class_name('card2')
-                try:
-                    attributes = cardElement.get_attribute('innerHTML')
-                    tweetDict['hasCard'] = True
-                    tweetDict['cardHTML'] = attributes
-                except:
-                    print "Cant get card"
-            except NoSuchElementException:
-                print "tweet is a plain text tweet"
-                return tweetDict
-        return tweetDict
+
 
 
 
 
 if __name__ == "__main__":
-    #query = urllib.pathname2url('Alabama Football: Biggest Questions Defending Champs Must Answer')
-    tweetFile = "oldNewsCrawlDir/0a90cd58dd0f11671efb8e771cafa76528cf8ffb9c2319eeabf2ac18.json"
-    fp = open(tweetFile,"rb")
-    js = json.load(fp)
-
+    query = urllib.pathname2url('Alabama Football: Biggest Questions Defending Champs Must Answer')
     searchObj = SeleniumCrawler("sagarConfig.config")
+    # apiObj = tweepyCrawl("sagarConfig.con")
 
-    #crawledData = searchObj.doCrawl(searchObj.encodeQuery(query , True) , 3)
-    for k in js.keys():
-        newDict = searchObj.crawlTweet(js[k])
-        print newDict
+    crawledData = searchObj.doCrawl(searchObj.encodeQuery(query , True) , 3)
 
-
-    #searchObj.getUserInfo(crawledData)
-    # with open('result2.json', 'w') as fp:
-    #     json.dump(crawledData, fp)
+    searchObj.getUserInfo(crawledData)
+    with open('result2.json', 'w') as fp:
+        json.dump(crawledData, fp)
     searchObj.killBrowser()
