@@ -151,6 +151,7 @@ class SeleniumCrawler:
         DataDict = {}
 
         for uname in usernames:
+            print "crawling User : " + uname
             userScreenName = uname
             url = baseUrl + userScreenName
             tweets_number = str(0)
@@ -167,8 +168,9 @@ class SeleniumCrawler:
                 print "Couldn't find body, moving on"
                 time.sleep(2)
                 continue
-            zone = body.find_element_by_class_name('ProfileNav-list')
+
             try :
+                zone = body.find_element_by_class_name('ProfileNav-list')
 
                 tweets = zone.find_element_by_class_name('ProfileNav-item--tweets')
                 tweets_number = tweets.find_element_by_class_name('ProfileNav-value').text
@@ -183,6 +185,7 @@ class SeleniumCrawler:
                     fav_number = fav.find_element_by_class_name('ProfileNav-value').text
                 except NoSuchElementException:
                     print "Couldn't Find Favourites"
+                    continue
 
                 print "User Stats for user : " + userScreenName + " following: " + following_number + " tweets: " +  tweets_number + " Followers: " +  follower_number + " Favourites: " +fav_number
                 usermeta = {'Name' : userScreenName , 'Following' : following_number , 'tweets' : tweets_number  , 'Followers' : follower_number , 'Likes' : fav_number}
@@ -192,6 +195,7 @@ class SeleniumCrawler:
 
             except NoSuchElementException :
                 print "Failed to find fields!! for : " + userScreenName
+                continue
 
         return DataDict
 
