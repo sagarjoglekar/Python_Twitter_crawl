@@ -7,6 +7,8 @@ import json
 from twitterSearch import tweepyCrawl
 from selenium.common.exceptions import NoSuchElementException
 import ParseTwitterConfig
+from pyvirtualdisplay import Display
+
 
 
 class SeleniumCrawler:
@@ -25,14 +27,12 @@ class SeleniumCrawler:
         config.parseConfig()
         self.options = webdriver.ChromeOptions()
         #Uncomment this line for Ubuntu
-        #self.options.binary_location = config.getChromePath()
+        self.options.binary_location = config.getChromePath()
         self.driver = config.getChromeDriverPath()
         print self.options
 
-        self.browser = webdriver.Chrome(self.driver,
-        chrome_options=self.options,
-        service_args=self.service_args,
-        service_log_path=self.service_log_path)
+        #self.browser = webdriver.Chrome(self.driver,chrome_options=self.options,service_args=self.service_args,service_log_path=self.service_log_path)
+        self.browser = webdriver.Chrome()
 
         if since != None:
             self.since = since
@@ -146,11 +146,12 @@ class SeleniumCrawler:
 
         return tweetData
 
-    def getUserInfo(self , DataDict):
+    def getUserInfo(self , usernames):
         baseUrl = "https://www.twitter.com/"
+        DataDict = {}
 
-        for tweet in DataDict:
-            userScreenName = DataDict[tweet]['meta']['data-screen-name']
+        for uname in usernames:
+            userScreenName = uname
             url = baseUrl + userScreenName
             tweets_number = str(0)
             following_number = str(0)
@@ -185,9 +186,9 @@ class SeleniumCrawler:
 
                 print "User Stats for user : " + userScreenName + " following: " + following_number + " tweets: " +  tweets_number + " Followers: " +  follower_number + " Favourites: " +fav_number
                 usermeta = {'Name' : userScreenName , 'Following' : following_number , 'tweets' : tweets_number  , 'Followers' : follower_number , 'Likes' : fav_number}
-                DataDict[tweet]['userMeta'] = dict()
+                DataDict[uname] = dict()
 
-                DataDict[tweet]['userMeta'] = usermeta
+                DataDict[uname] = usermeta
 
             except NoSuchElementException :
                 print "Failed to find fields!! for : " + userScreenName
@@ -239,19 +240,25 @@ class SeleniumCrawler:
 
 if __name__ == "__main__":
     #query = urllib.pathname2url('Alabama Football: Biggest Questions Defending Champs Must Answer')
-    tweetFile = "oldNewsCrawlDir/0a90cd58dd0f11671efb8e771cafa76528cf8ffb9c2319eeabf2ac18.json"
-    fp = open(tweetFile,"rb")
-    js = json.load(fp)
+    display = Display(visible=0, size=(800, 600))
+    display.start()
+    # tweetFile = "NewsCrawlDir/0ad446db97de1168675b4cc1c9fa56566c5025964fa1cd941e27e27f.json"
+    # fp = open(tweetFile,"rb")
+    # js = json.load(fp)
 
     searchObj = SeleniumCrawler("sagarConfig.config")
 
     #crawledData = searchObj.doCrawl(searchObj.encodeQuery(query , True) , 3)
-    for k in js.keys():
-        newDict = searchObj.crawlTweet(js[k])
-        print newDict
+    # for k in js.keys():
+    #     newDict = searchObj.crawlTweet(js[k])
+    #     print newDict
+    #     attributes = searchObj.getAttributes()
+    #     print attributes
 
 
-    #searchObj.getUserInfo(crawledData)
+    data = searchObj.getUserInfo(['sagarjoglekar','avraman'])
+    print data
     # with open('result2.json', 'w') as fp:
     #     json.dump(crawledData, fp)
     searchObj.killBrowser()
+    display.stop()

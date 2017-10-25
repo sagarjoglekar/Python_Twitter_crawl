@@ -26,3 +26,6 @@ python EmotionCrawl.py user.config --geo 'language' keayword1 keyword2 ...
 Third party Libraries Used:
 * twitter (python-twitter)
 * TwitterSearch
+* Selenium for python
+* Setup requried for chromewebdriver
+* pythonvirtualdisplay
