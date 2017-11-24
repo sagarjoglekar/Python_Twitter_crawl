@@ -1,6 +1,6 @@
 
 *.pyc
-
+*.json
 *.config
 keywords.list
 newsWords.list

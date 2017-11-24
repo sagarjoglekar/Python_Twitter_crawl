@@ -161,12 +161,12 @@ class SeleniumCrawler:
 
 
             self.browser.get(url)
-            time.sleep(1)
+            time.sleep(0.5)
             try:
                 body = self.browser.find_element_by_tag_name('body')
             except NoSuchElementException:
                 print "Couldn't find body, moving on"
-                time.sleep(2)
+                # time.sleep(2)
                 continue
 
             try :
