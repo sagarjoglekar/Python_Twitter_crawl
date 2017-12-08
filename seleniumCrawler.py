@@ -4,10 +4,10 @@ from selenium.webdriver.common.keys import Keys
 import urllib
 from datetime import datetime , timedelta
 import json
-from twitterSearch import tweepyCrawl
 from selenium.common.exceptions import NoSuchElementException
 import ParseTwitterConfig
-from pyvirtualdisplay import Display
+#Uncomment this for headless machines linux
+#from pyvirtualdisplay import Display
 
 
 
@@ -75,6 +75,81 @@ class SeleniumCrawler:
         # chrome_options=self.options,
         # service_args=self.service_args,
         # service_log_path=self.service_log_path)
+
+        self.browser.get(url)
+        time.sleep(1)
+        try:
+            body = self.browser.find_element_by_tag_name('body')
+        except NoSuchElementException:
+            print "Couldn't find body, moving on"
+            time.sleep(2)
+            return tweetData
+
+        for _ in range(pages):
+            body.send_keys(Keys.PAGE_DOWN)
+            print "Scrolling: %d" %_
+            time.sleep(2)
+
+        try:
+            stream = body.find_element_by_class_name('stream')
+            tweets = stream.find_elements_by_class_name('stream-item')
+            print "Found %d Tweets " %len(tweets)
+        except NoSuchElementException:
+            print "Search showed up empty, moving on"
+            return tweetData
+
+        for tweet in tweets:
+            reply_count = 0
+            retweet_count = 0
+            like_count = 0
+            attrs = {}
+            tweet_text = ""
+
+            try :
+                meta = tweet.find_element_by_class_name('tweet')
+                print tweet.text
+
+                attrs = self.getAttributes(meta)
+
+                content = meta.find_element_by_class_name('content')
+
+                tweet_text = content.find_element_by_class_name('tweet-text').text
+
+
+
+
+                actions = content.find_element_by_class_name('ProfileTweet-actionList')
+
+                reply = actions.find_element_by_class_name('ProfileTweet-action--reply')
+                reply_count = reply.find_element_by_class_name('ProfileTweet-actionCountForPresentation').text
+
+                retweet = actions.find_element_by_class_name('ProfileTweet-action--retweet')
+                retweet_count = retweet.find_element_by_class_name('ProfileTweet-actionCountForPresentation').text
+
+                like = actions.find_element_by_class_name('ProfileTweet-action--favorite' )
+                like_count = like.find_element_by_class_name('ProfileTweet-actionCountForPresentation').text
+
+            except NoSuchElementException:
+
+                print "Failed to find Action Fields!! "
+                break
+
+            tweetData[attrs['data-tweet-id']] = dict()
+            tweetData[attrs['data-tweet-id']]['meta'] = attrs
+            tweetData[attrs['data-tweet-id']]['text'] = tweet_text
+            tweetData[attrs['data-tweet-id']]['Reply_count'] = reply_count
+            tweetData[attrs['data-tweet-id']]['Retweet_count'] = retweet_count
+            tweetData[attrs['data-tweet-id']]['Like_count'] = like_count
+            print tweetData[attrs['data-tweet-id']]
+            print "\n"
+
+
+        return tweetData
+
+    def crawlTweetRepliesByURL(self, queryString , pages):
+        url = queryString
+        print url
+        tweetData = dict()
 
         self.browser.get(url)
         time.sleep(1)
@@ -244,8 +319,9 @@ class SeleniumCrawler:
 
 if __name__ == "__main__":
     #query = urllib.pathname2url('Alabama Football: Biggest Questions Defending Champs Must Answer')
-    display = Display(visible=0, size=(800, 600))
-    display.start()
+    #Uncomment this for headless machine
+    # display = Display(visible=0, size=(800, 600))
+    # display.start()
     # tweetFile = "NewsCrawlDir/0ad446db97de1168675b4cc1c9fa56566c5025964fa1cd941e27e27f.json"
     # fp = open(tweetFile,"rb")
     # js = json.load(fp)
@@ -260,9 +336,10 @@ if __name__ == "__main__":
     #     print attributes
 
 
-    data = searchObj.getUserInfo(['sagarjoglekar','avraman'])
+    # data = searchObj.getUserInfo(['sagarjoglekar','avraman'])
+    data = searchObj.crawlTweetRepliesByURL("https://twitter.com/LondonFire/status/934110306946703360",10)
     print data
     # with open('result2.json', 'w') as fp:
     #     json.dump(crawledData, fp)
     searchObj.killBrowser()
-    display.stop()
+    # display.stop()
