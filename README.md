@@ -18,6 +18,10 @@ python Oauthtwitter.py 'path/to/valid/user.config'
 
 Actual project will begin now:
 
+# The project is virtualenv friendly.
+To seperate pollution of pacakages, install virtual env and then use requirements to make sure you limit installations of packages to this project
+
+
 For Searching Twitter:
 
 python EmotionCrawl.py user.config --geo 'language' keayword1 keyword2 ...
@@ -29,3 +33,9 @@ Third party Libraries Used:
 * Selenium for python
 * Setup requried for chromewebdriver
 * pythonvirtualdisplay
+
+Check out the requirements.txt for more info\
+
+
+
+

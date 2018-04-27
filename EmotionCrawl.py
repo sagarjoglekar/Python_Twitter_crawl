@@ -1,5 +1,5 @@
 import sys
-import twitterSearch
+import twitterSearchV0 as twitterSearch
 from optparse import OptionParser
 
 keywords = []
@@ -10,7 +10,7 @@ words = []
 if __name__ == "__main__":
 
     if len(sys.argv) < 3:
-        print 'Use search correctly:python  EmotionCrawl <user.config> --geo(optional) <place> --radius(optional) <radius in meters> <keyphraseList.list> File>'
+        print 'Use search correctly:python  EmotionCrawl <user.config> --geo(optional) <place> --radius(optional) <radius in meters> <keyphraseList.list> File'
         print ' If geotag absent, a default world level would be used '
         sys.exit()
     else:
