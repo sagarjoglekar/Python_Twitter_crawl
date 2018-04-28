@@ -159,6 +159,10 @@ class SeleniumCrawler:
             print "Couldn't find body, moving on"
             time.sleep(2)
             return tweetData
+        
+        #Make blank click to get around overlays
+        elementOverlay = body.find_element_by_class_name('PermalinkOverlay-body')
+        elementOverlay.click()
 
         for _ in range(pages):
             body.send_keys(Keys.PAGE_DOWN)
@@ -337,8 +341,8 @@ if __name__ == "__main__":
 
 
     # data = searchObj.getUserInfo(['sagarjoglekar','avraman'])
-    data = searchObj.crawlTweetRepliesByURL("https://twitter.com/LondonFire/status/934110306946703360",10)
-    print data
+    data = searchObj.crawlTweetRepliesByURL("https://twitter.com/elonmusk/status/989198118666162176",10)
+    print len(data.keys())
     # with open('result2.json', 'w') as fp:
     #     json.dump(crawledData, fp)
     searchObj.killBrowser()
